@@ -1,3 +1,6 @@
+
+
+
 *.csv
 *.pdf
 
@@ -185,4 +188,13 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+.idea/DRECdata.iml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.ipynb_checkpoints/
+
+__pycache__/
 
