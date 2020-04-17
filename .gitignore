@@ -198,5 +198,6 @@ Temporary Items
 
 __pycache__/
 
-!/examples/coil100.png
+
 !/requirements.txt
+!/DRflow/examples/coil100.png
