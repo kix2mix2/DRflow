@@ -3,6 +3,7 @@ import boto3
 from botocore.exceptions import ClientError
 import os
 
+
 def upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
 
@@ -17,7 +18,7 @@ def upload_file(file_name, bucket, object_name=None):
         object_name = file_name
 
     # Upload the file
-    s3_client = boto3.client('s3')
+    s3_client = boto3.client("s3")
     try:
         response = s3_client.upload_file(file_name, bucket, object_name)
     except ClientError as e:
@@ -32,7 +33,7 @@ def upload_dir(path):
             upload_dir("%s/%s" % (path, f))
 
         else:
-            if f.endswith('png') or f.endswith('pg'):
+            if f.endswith("png") or f.endswith("pg"):
                 print("%s/%s" % (path, f))
                 # upload_file("%s/%s" % (path, f), 'drdata')
 
@@ -47,24 +48,24 @@ def download_dir(prefix, local, bucket, client):
     """
     keys = []
     dirs = []
-    next_token = ''
+    next_token = ""
     base_kwargs = {
-        'Bucket':bucket,
-        'Prefix':prefix,
+        "Bucket": bucket,
+        "Prefix": prefix,
     }
     while next_token is not None:
         kwargs = base_kwargs.copy()
-        if next_token != '':
-            kwargs.update({'ContinuationToken': next_token})
+        if next_token != "":
+            kwargs.update({"ContinuationToken": next_token})
         results = client.list_objects_v2(**kwargs)
-        contents = results.get('Contents')
+        contents = results.get("Contents")
         for i in contents:
-            k = i.get('Key')
-            if k[-1] != '/':
+            k = i.get("Key")
+            if k[-1] != "/":
                 keys.append(k)
             else:
                 dirs.append(k)
-        next_token = results.get('NextContinuationToken')
+        next_token = results.get("NextContinuationToken")
     for d in dirs:
         dest_pathname = os.path.join(local, d)
         if not os.path.exists(os.path.dirname(dest_pathname)):
