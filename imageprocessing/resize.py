@@ -42,7 +42,7 @@ def resize_img(file, save_dir, dim=[50, 50]):
 
 def resize_all(input_folder, output_folder="size", dim=[50, 50]):
     # if destination folder doesn't exist, create it
-    save_dir = output_folder + str(dim[0]) + "/"
+    save_dir = output_folder
     print(save_dir)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)

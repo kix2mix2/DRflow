@@ -31,8 +31,8 @@ def apply_dr(
         mindist="_d" + str(min_dist) if min_dist is not None else "",
     )
 
-    if os.path.exists(dataset_name + "/figures/1_" + fn + ".pdf"):
-        print("---------Finished: {}{}-----------".format(input_file, fn))
+    if os.path.exists(output_folder + fn + ".csv"):
+        print("---------Skipping: {}{}-----------".format(input_file, fn))
         return
 
     print(("---------Startings: {} - {}-----------".format(input_file, fn)))

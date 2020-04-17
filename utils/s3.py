@@ -14,28 +14,30 @@ def upload_file(file_name, bucket, object_name=None):
     """
 
     # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = file_name
+    object_name += file_name.split('/')[-1]
 
     # Upload the file
     s3_client = boto3.client("s3")
+    print(object_name)
     try:
         response = s3_client.upload_file(file_name, bucket, object_name)
+        print(response)
     except ClientError as e:
         logging.error(e)
         return False
     return True
 
 
-def upload_dir(path):
-    for f in os.listdir(path):
+def upload_dir(path, object_name):
+    for i,f in enumerate(os.listdir(path)):
         if os.path.isdir("%s/%s" % (path, f)) is True:
-            upload_dir("%s/%s" % (path, f))
+            upload_dir("%s/%s" % (path, f), object_name = object_name)
 
         else:
             if f.endswith("png") or f.endswith("pg"):
-                print("%s/%s" % (path, f))
-                # upload_file("%s/%s" % (path, f), 'drdata')
+                print(i, f)
+                # print("%s/%s" % (path, f))
+                upload_file("%s/%s" % (path, f), 'drdata', object_name = object_name)
 
 
 def download_dir(prefix, local, bucket, client):

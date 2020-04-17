@@ -14,8 +14,7 @@ def crawl_the_soup(
     print(df.shape)
 
     for i, row in df.iterrows():
-        if i < 150:
-            continue
+
         try:
             page = urllib.request.urlopen(row["url"])
             soup = BSHTML(page)

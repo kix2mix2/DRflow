@@ -4,6 +4,7 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import os
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
+import seaborn as sns
 
 
 # ray.init()
@@ -41,7 +42,6 @@ def plot_all_dr_files(
                 paths = list(thumbnail_folder + df["filename"] + ".png")
                 idx = df.index
 
-            print("ss")
             plot_projection(
                 input_folder + file, output_folder, idx, labels, paths, color_palette
             )
@@ -100,6 +100,6 @@ def plot_projection(input_file, output_folder, idx, labels, paths, color_palette
         ax.add_artist(ab)
 
     output_file = output_folder + input_file.split("/")[-1].split(".csv")[0] + ".pdf"
-    print(output_file)
+    print('--------')
     plt.savefig(output_file)
     plt.close()

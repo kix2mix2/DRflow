@@ -12,7 +12,7 @@ setup(
         "botocore==1.12.253",
         "seaborn==0.9.0",
         "matplotlib==3.1.2",
-        "numpy==1.16.2",
+        # "numpy==1.16.2",
         "scipy==1.4.1",
         "umap_learn==0.3.10",
         "opencv_python==4.1.2.30",
