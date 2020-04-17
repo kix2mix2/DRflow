@@ -27,5 +27,5 @@ To do:
 ## Examples
 
 #### Coil-100 dataset
-![UMAP projection of COIL100](examples/coil100.png)
+![UMAP projection of COIL100](DRflow/examples/coil100.png)
 
