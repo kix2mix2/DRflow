@@ -12,7 +12,7 @@ from sklearn.random_projection import GaussianRandomProjection as GRP
 from sklearn.model_selection import train_test_split
 
 
-@ray.remote
+# @ray.remote
 def apply_dr(
     input_file,
     output_folder,
@@ -21,10 +21,12 @@ def apply_dr(
     perplexity=None,
     n_neighbors=None,
     min_dist=None,
-    max_samples=10000,
+    max_samples=10000, size = None, c = None
 ):
-    fn = "{dataset_name}{dr_name}{perp}{neigh}{mindist}".format(
+    fn = "{dataset_name}{size}{c}{dr_name}{perp}{neigh}{mindist}".format(
         dataset_name=dataset_name,
+        size = "_size" +str(size) if size is not None else "",
+        c = "_c" +str(c) if c is not None else "",
         dr_name="_" + dr_name,
         perp="_p" + str(perplexity) if perplexity is not None else "",
         neigh="_n" + str(n_neighbors) if n_neighbors is not None else "",
@@ -35,8 +37,13 @@ def apply_dr(
         print("---------Skipping: {}{}-----------".format(input_file, fn))
         return
 
-    print(("---------Startings: {} - {}-----------".format(input_file, fn)))
-    df = pd.read_csv(input_file)
+
+    try:
+        df = pd.read_csv(input_file)
+        print(("---------Startings: {} - {}-----------".format(input_file, fn)))
+    except:
+        print("{} - does not exist".format(fn))
+        return
 
     y = df["labels"]
     X = df.iloc[:, :-2]
@@ -61,7 +68,7 @@ def apply_dr(
         dr = PCA(n_components=2)
 
     elif dr_name == "TSNE":
-        dr = TSNE(n_components=2, perplexity=perplexity, verbose=1)
+        dr = TSNE(n_components=2, perplexity=perplexity, verbose=0)
 
     elif dr_name == "ISM":
         dr = Isomap(n_components=2, n_neighbors=n_neighbors)

@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import ray
 
-# @ray.remote
+@ray.remote
 def flatten_images(input_folder, output_folder, filename):
     # check if input folder exists
     if not os.path.exists(input_folder):
@@ -27,7 +27,7 @@ def flatten_images(input_folder, output_folder, filename):
         if ff.startswith("."):
             # print('not an image: ' + ff)
             continue
-        print(i, ff.split(".")[0])
+        # print(i, ff.split(".")[0])
 
         img = cv2.imread(input_folder + ff, cv2.IMREAD_UNCHANGED)
         if img is None:
@@ -50,10 +50,10 @@ def flatten_images(input_folder, output_folder, filename):
         imgs["filename"] = names
         imgs["labels"] = ["_".join(n.split("_")[:-1]) for n in names]
         imgs = imgs.dropna(axis=1)
-        print(imgs.shape)
-        print(output_folder + filename + ".csv")
+        # print(imgs.shape)
+        # print(output_folder + filename + ".csv")
         imgs.to_csv(output_folder + filename + ".csv", index=False)
-        print(imgs.head(2))
+        # print(imgs.head(2))
 
     print("----Finished: {}----".format(input_folder))
 
@@ -67,13 +67,23 @@ def flatten_image(data):
     # print(flat_data.shape)
     return flat_data
 
-
+@ray.remote
 def keep_top_k_classes(filename, c=10):
+    output_name = "{}_{}classes.csv".format(filename.split(".csv")[0], c)
+
+    if os.path.exists(output_name):
+        print("Skipping: {}".format(output_name))
+        return
+
     try:
         df = pd.read_csv(filename)
+        print("Started: {}".format(filename))
     except:
-        print("didnt work")
+
+        # print("{} didnt work".format(filename))
         return
+
+
 
     print("Before: {}".format(df.shape))
     df_agg = (
@@ -82,12 +92,19 @@ def keep_top_k_classes(filename, c=10):
         .reset_index()
         .sort_values(["filename"], ascending=False)
     )
-    ll = df_agg.reset_index().loc[:c, "labels"]
 
-    print("{} \n ---- \n {}".format(filename, df_agg.head(c)))
-    df = df.loc[df["labels"].isin(ll)]
 
-    df.to_csv("{}_{}classes.csv".format(filename.split(".csv")[0], c), index=False)
-    print("After: {}".format(df.shape))
-    print("Finished: {}".format(filename))
+    for i in range(2,c+2,2):
+        ll = list(df_agg.reset_index(drop=True).loc[:i-1, "labels"])
+        # print('aasdasdadasdadsasd')
+        print(i, ll)
+        # print("{} \n ---- \n {}".format(filename, df_agg.head(i)))
+        df1 = df.loc[df["labels"].isin(ll)].copy()
+
+        output_name = "{}_{}classes.csv".format(filename.split(".csv")[0], i)
+
+
+        df1.to_csv(output_name, index=False)
+        print("After: {}".format(df1.shape))
+        print("Finished: {}".format(filename))
     return 1

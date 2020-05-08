@@ -54,8 +54,8 @@ def plot_all_dr_files(
 def getImage(path):
     return OffsetImage(plt.imread(path))
 
-
-def plot_projection(input_file, output_folder, idx, labels, paths, color_palette, loc=[0,1], fs= (100, 100)):
+@ray.remote
+def plot_projection(input_file, output_folder, thumbnail_folder, color_palette = None, loc=[0,1], fs= (100, 100), size_limit = 500):
     print(input_file)
     try:
         df = pd.read_csv(input_file)
@@ -63,11 +63,20 @@ def plot_projection(input_file, output_folder, idx, labels, paths, color_palette
         print("file not found")
         return
 
-    df = df.loc[idx, :]
-    df["paths"] = paths
-    df["ll"] = labels
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    if df.shape[0] > size_limit:
+        _, df = train_test_split(
+            df, test_size = size_limit, stratify = df["labels"]
+        )
+
+    # print(df.head())
+    df["paths"] = thumbnail_folder + df['filename'] + '.png'
+    le = preprocessing.LabelEncoder()
+    df["ll"] = le.fit_transform(df['labels'])
     fig, ax = plt.subplots(figsize=fs)
-    ax.scatter(df.loc[:, loc[0]], df.loc[:, loc[1]])
+    ax.scatter(df.iloc[:, loc[0]], df.iloc[:, loc[1]])
 
     for i, row in df.iterrows():
         try:
@@ -99,8 +108,8 @@ def plot_projection(input_file, output_folder, idx, labels, paths, color_palette
         )
         ax.add_artist(ab)
 
-    output_file = output_folder + input_file.split("/")[-1].split(".csv")[0] + ".pdf"
-    print('--------')
-    plt.show()
+    output_file = output_folder + input_file.split("/")[-1].split(".csv")[0] + ".png"
+    print('--------', output_file)
+    # plt.show()
     plt.savefig(output_file)
     plt.close()
