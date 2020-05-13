@@ -21,7 +21,7 @@ def apply_dr(
     perplexity=None,
     n_neighbors=None,
     min_dist=None,
-    max_samples=10000, size = None, c = None
+    max_samples=5000, size = None, c = None
 ):
     fn = "{dataset_name}{size}{c}{dr_name}{perp}{neigh}{mindist}".format(
         dataset_name=dataset_name,

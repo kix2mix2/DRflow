@@ -3,8 +3,9 @@ import cv2
 import numpy as np
 import pandas as pd
 import ray
+from PIL import Image
 
-@ray.remote
+# @ray.remote
 def flatten_images(input_folder, output_folder, filename):
     # check if input folder exists
     if not os.path.exists(input_folder):
@@ -29,15 +30,29 @@ def flatten_images(input_folder, output_folder, filename):
             continue
         # print(i, ff.split(".")[0])
 
-        img = cv2.imread(input_folder + ff, cv2.IMREAD_UNCHANGED)
+        # img = cv2.imread(input_folder + ff, cv2.IMREAD_UNCHANGED)
+        img = Image.open(r"{}".format(input_folder + ff))
         if img is None:
             print("This image is None: " + ff)
             continue
 
-        if len(img.shape) > 2 and img.shape[2] == 4:
+        if img.size[0]!=img.size[1]:
+            dim = (np.max(img.size), np.max(img.size))
             try:
+                # resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+                img = img.resize(dim, resample = 0)
+                img.save(input_folder + ff)
+                print(img.size)
+            except:
+                continue
+        # print(img.size)
+
+        if len(img.size) > 2 and img.size[2] == 4:
+            try:
+                print('here')
                 img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
             except:
+                print('gone')
                 continue
 
         img = pd.DataFrame(np.array(img).flatten()).T

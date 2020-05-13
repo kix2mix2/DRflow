@@ -2,8 +2,9 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 import os
+import ray
 
-
+@ray.remote
 def upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
 
@@ -28,7 +29,7 @@ def upload_file(file_name, bucket, object_name=None):
     return True
 
 
-def upload_dir(path, object_name):
+def upload_dir(path, object_name= None):
     for i,f in enumerate(os.listdir(path)):
         if os.path.isdir("%s/%s" % (path, f)) is True:
             upload_dir("%s/%s" % (path, f), object_name = object_name)
@@ -37,7 +38,7 @@ def upload_dir(path, object_name):
             if f.endswith("png") or f.endswith("pg"):
                 print(i, f)
                 # print("%s/%s" % (path, f))
-                upload_file("%s/%s" % (path, f), 'drdata', object_name = object_name)
+                upload_file.remote("%s/%s" % (path, f), 'drdata', object_name = object_name)
 
 
 def download_dir(prefix, local, bucket, client):
