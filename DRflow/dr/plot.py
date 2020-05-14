@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-# import pandas as pd
-import modin.pandas as pd
+import pandas as pd
+# import modin.pandas as pd
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import os
 from sklearn.model_selection import train_test_split
@@ -65,9 +65,9 @@ def plot_projection(input_file, output_folder, thumbnail_folder, color_palette=N
                     fs=(100, 100), size_limit=500):
     print(input_file)
     output_file = output_folder + input_file.split("/")[-1].split(".csv")[0] + ".png"
-    if os.path.exists(output_file):
-        # print('skipping')
-        return
+    # if os.path.exists(output_file):
+    #     # print('skipping')
+    #     return
     try:
         df = pd.read_csv(input_file)
     except:
