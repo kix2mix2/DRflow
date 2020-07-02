@@ -60,9 +60,9 @@ def getImage(path, cmap=None):
         return OffsetImage(plt.imread(path), cmap = cmap)
 
 
-@ray.remote
+# @ray.remote
 def plot_projection(input_file, output_folder, thumbnail_folder, color_palette=None, cmap=None, loc=[0, 1],
-                    fs=(100, 100), size_limit=500):
+                    fs=(100, 100), size_limit=500, labels = 'labels', filename='filename'):
     print(input_file)
     output_file = output_folder + input_file.split("/")[-1].split(".csv")[0] + ".png"
     # if os.path.exists(output_file):
@@ -79,21 +79,23 @@ def plot_projection(input_file, output_folder, thumbnail_folder, color_palette=N
 
     if df.shape[0] > size_limit:
         _, df = train_test_split(
-            df, test_size = size_limit, stratify = df["labels"]
+            df, test_size = size_limit, stratify = df[labels]
         )
 
-    df["paths"] = thumbnail_folder + df['filename'] + '.png'
+    df["paths"] = thumbnail_folder + df[filename] + '.png'
     le = preprocessing.LabelEncoder()
-    df["ll"] = le.fit_transform(df['labels'])
+    df["ll"] = le.fit_transform(df[labels])
     # print(df.head())
     fig, ax = plt.subplots(figsize = fs)
     ax.scatter(df.iloc[:, loc[0]], df.iloc[:, loc[1]])
+    print(df.iloc[:, [loc[0],loc[1]]].head())
 
     for i, row in df.iterrows():
+        # print(i)
         try:
             ab = AnnotationBbox(getImage(row["paths"], cmap), (row[loc[0]], row[loc[1]]), frameon = True)
         except Exception as e:
-            # print(e)
+            print(e)
             # print('failed1', row["paths"])
             try:
                 ab = AnnotationBbox(
@@ -105,7 +107,7 @@ def plot_projection(input_file, output_folder, thumbnail_folder, color_palette=N
                 #                 print('failed2')
                 continue
 
-        ab.patch.set_linewidth(3)
+        ab.patch.set_linewidth(7)
         ab.patch.set_edgecolor(#'white',
                                color_palette[
                                    int(row["ll"])

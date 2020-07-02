@@ -24,7 +24,7 @@ if __name__ == "__main__":
                        dr_dir = '../../data/{}/mini_batch/dr/'.format(name))
 
 
-    time.sleep(80000)
+    time.sleep(800000)
 
     print('Job Done!')
 

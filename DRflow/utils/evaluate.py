@@ -152,3 +152,23 @@ def evaluate_files(types=['supervised', 'scagnostics', 'highlow'],
                     continue
 
 
+def sample_and_save(input_file, output_folder, size_limit=800, idx=None, labels = 'labels'):
+    fn = input_file.split('/')[-1].split('.csv')[0] + '_1.csv'
+    print(input_file)
+    df = pd.read_csv(input_file)
+
+    if idx is None:
+        if df.shape[0] > size_limit:
+            try:
+                _, df = train_test_split(df, test_size = size_limit, stratify = df[labels])
+            except:
+                _, df = train_test_split(df, test_size = size_limit)
+
+    else:
+        df = df.loc[idx].copy()
+
+    df.to_csv(output_folder + fn, index = False)
+    idx = list(df.index)
+
+    print('Saved mini batch: {}'.format(fn))
+    return idx

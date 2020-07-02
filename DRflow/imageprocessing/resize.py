@@ -7,24 +7,36 @@ from PIL import Image
 import ray
 
 
-
-def resize_img(file, save_dir, dim=[50, 50]):
+def resize_img(file, save_dir, dim=[50, 50], crop=False):
     filename = save_dir + file.split("/")[-1]
     if os.path.exists(filename):
         print("Skipping...")
     try:
         # img = cv2.imread(file, cv2.IMREAD_UNCHANGED)
         img = Image.open(r"{}".format(file))
-        print(img.size)
+        # print(img.size)
     except:
         print(sys.exc_info())
         print("FAILURE reading!")
         return
 
+
+    if crop:
+        width, height = img.size  # Get dimensions
+
+        left = (width - 2250) / 2
+        top = (height - 2250) / 2
+        right = (width + 2250) / 2
+        bottom = (height + 2250) / 2
+
+        img = img.crop((left, top, right, bottom))
+
+
     # for i in [0, 1]:
     #     if img.size[i] < dim[i]:
     #         dim[i] = img.size[i]
 
+    # print(img.size)
     dim = tuple(dim)
     try:
         # resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
