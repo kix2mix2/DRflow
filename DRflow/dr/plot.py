@@ -62,9 +62,14 @@ def getImage(path, cmap=None):
 
 # @ray.remote
 def plot_projection(input_file, output_folder, thumbnail_folder, color_palette=None, cmap=None, loc=[0, 1],
-                    fs=(100, 100), size_limit=500, labels = 'labels', filename='filename'):
+                    fs=(100, 100), size_limit=500, labels = 'labels', filename='filename', output_file = None):
     print(input_file)
-    output_file = output_folder + input_file.split("/")[-1].split(".csv")[0] + ".png"
+    if output_file is None:
+        output_file = output_folder + input_file.split("/")[-1].split(".csv")[0] + ".png"
+
+    else:
+        output_file += '.png'
+
     # if os.path.exists(output_file):
     #     # print('skipping')
     #     return

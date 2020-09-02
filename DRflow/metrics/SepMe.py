@@ -2,24 +2,23 @@ import networkx as nx
 import numpy as np
 import nglpy
 from scipy.spatial.distance import euclidean
+from SepMe.graph.graph_neighbourhoods import get_cbsg
+from SepMe.graph.graph_purity import total_neighbour_purity
+import pandas as pd
 
 
-def get_cbsg(df, beta=0):
-    graph = nx.Graph()
-    graph.add_nodes_from(df.iterrows())
 
-    point_set = np.array(df[["x", "y"]])
-    point_set = point_set + 0.0001
+def compute(visu, labels, beta=0.2):
 
-    # aGraph = nglpy.Graph(point_set, "beta skeleton", 9, beta)
-    aGraph = nglpy.EmptyRegionGraph(max_neighbors=9, relaxed=False, beta=beta)
-    aGraph.build(point_set)
-    d = aGraph.neighbors()
+    df = pd.DataFrame({'x':visu[:,0], 'y': visu[:,1], 'class':labels})
+    graph = get_cbsg(df, beta)
+    stats = total_neighbour_purity(df, graph, purity_type=["cp", "ce", "mv"], target=False)
 
-    for key, value in d.items():
-        for v in value:
-            graph.add_edge(
-                key, v, weight=euclidean(df.loc[key, ["x", "y"]], df.loc[v, ["x", "y"]])
-            )
 
-    return graph
+    
+    res ={}
+
+    for k in stats.keys():
+        res['SepMe_'+k] = stats[k]
+
+    return res
